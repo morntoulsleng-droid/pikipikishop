@@ -80,6 +80,37 @@ h2 {
 .hidden {
     display: none;
 }
+.payment-section {
+    margin-top: 12px;
+    background: #0f172a;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px dashed #334155;
+    font-size: 0.82rem;
+}
+.payment-section p {
+    margin-bottom: 6px;
+}
+.form-group {
+    margin-top: 10px;
+}
+.form-group label {
+    display: block;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="file"] {
+    width: 100%;
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #f8fafc;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
 #buy-btn {
     width: 100%;
     margin-top: 14px;
