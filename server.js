@@ -5,13 +5,13 @@ const fs = require('fs');
 const path = require('path');
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '8583374127:AAG18j9SqODa1w8qZo_ZVtDOrq81co7dbPs';
-const ADMIN_ID = process.env.ADMIN_ID || '123456789'; // ប្ដូរជា Telegram User ID របស់អ្នក
+const ADMIN_ID = process.env.ADMIN_ID || '123456789';
 const bot = new Telegraf(BOT_TOKEN);
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
-const WEB_APP_URL = 'https://morntoulsleng-droid.github.io/shop_key_game/index.html';
+const WEB_APP_URL = 'https://morntoulsleng-droid.github.io/pikipikishop/index.html';
 
 function getStock() {
     const filePath = path.join(__dirname, 'stock.json');
@@ -37,7 +37,7 @@ function consumeKey(itemType) {
 
 bot.start((ctx) => {
     ctx.reply(
-        '🔥 **សូមស្វាគមន៍មកកាន់ Super Store Key Shop!**\n\nជ្រើសរើសទំនិញតាម Mini App ខាងក្រោម៖',
+        '🔥 **សូមស្វាគមន៍មកកាន់ PikiPiki Shop!**\n\nជ្រើសរើសទំនិញតាម Mini App ខាងក្រោម៖',
         {
             parse_mode: 'Markdown',
             ...Markup.inlineKeyboard([
@@ -59,7 +59,7 @@ bot.command('addstock', (ctx) => {
     }
 
     const itemType = parts[0].trim();
-    const newKey = parts.trim(); // កែត្រូវជា index
+    const newKey = parts.trim(); // Fixed index
 
     let stock = getStock();
     if (!stock[itemType]) stock[itemType] = [];
@@ -69,30 +69,47 @@ bot.command('addstock', (ctx) => {
     ctx.reply(`✅ បានបន្ថែម Key \`${newKey}\` ចូលទៅក្នុង stock *${itemType}* រួចរាល់!`, { parse_mode: 'Markdown' });
 });
 
-bot.on('web_app_data', (ctx) => {
+bot.on('web_app_data', async (ctx) => {
     try {
         const data = JSON.parse(ctx.webAppData.data);
-        const userId = ctx.from.id;
+        const user = ctx.from;
         
+        const userMention = user.username 
+            ? `@${user.username}` 
+            : `[${user.first_name}](tg://user?id=${user.id})`;
+
         const assignedKey = consumeKey(data.item);
 
         if (!assignedKey) {
             return ctx.reply(
-                `❌ **សូមអភ័យទោស!**\nទំនិញ *${data.item}* ប្រస్తుមានអស់ Stock ហើយ។ សូមទាក់ទង Admin។`,
+                `❌ **សូមអភ័យទោស!** ${userMention}\nទំនិញ *${data.item}* ប្រస్తుមានអស់ Stock ហើយ។ សូមទាក់ទង Admin។`,
                 { parse_mode: 'Markdown' }
             );
         }
 
-        ctx.reply(
-            `✅ **ការបញ្ជាទិញជោគជ័យ!**\n\n` +
-            `👤 អតិថិជន ID: \`${userId}\`\n` +
+        const reportText = 
+            `✅ **ការបញ្ជាទិញ & បង់ប្រាក់ជោគជ័យ!**\n\n` +
+            `👤 អតិថិជន: ${userMention}\n` +
+            `📝 ឈ្មោះកត់ត្រា: *${data.name}*\n` +
+            `📅 ថ្ងៃខែ: *${data.date}*\n` +
             `📦 ទំនិញ: *${data.item}*\n` +
             `💰 តម្លៃ: *$${data.price}*\n` +
             `🔑 Key របស់អ្នក: \`${assignedKey}\`\n\n` +
-            `⚠️ សូមរក្សាទុក Key នេះកុំឱ្យបាត់!`,
-            { parse_mode: 'Markdown' }
-        );
+            `⚠️ សូមរក្សាទុក Key នេះកុំឱ្យបាត់!`;
+
+        if (data.slipBase64) {
+            const base64Data = data.slipBase64.replace(/^data:image\/\w+;base64,/, '');
+            const buffer = Buffer.from(base64Data, 'base64');
+            await ctx.replyWithPhoto({ source: buffer }, { 
+                caption: reportText, 
+                parse_mode: 'Markdown' 
+            });
+        } else {
+            await ctx.reply(reportText, { parse_mode: 'Markdown' });
+        }
+
     } catch (e) {
+        console.error(e);
         ctx.reply('❌ មានកំហុសក្នុងការកែច្នៃទិន្នន័យ។');
     }
 });
@@ -103,7 +120,7 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 bot.launch().then(() => {
-    console.log('🤖 Bot @superstore2222_bot is online with stock system!');
+    console.log('🤖 Bot is online with payment slip system!');
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
