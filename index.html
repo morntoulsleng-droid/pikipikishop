@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Store - Key Shop</title>
+    <title>PikiPiki Shop - Key Shop</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h2>🔥 Super Store Key Shop</h2>
+            <h2>🔥 PikiPiki Shop</h2>
             <p class="subtitle">ជ្រើសរើសប្រភេទ Key ហ្គេមដែលអ្នកចង់ទិញ៖</p>
         </header>
 
@@ -41,10 +41,29 @@
         </div>
 
         <div id="selected-info" class="selected-box hidden">
-            <h4>🛒 ព័ត៌មានការទិញ</h4>
+            <h4>🛒 ព័ត៌មានការទិញ & បង់ប្រាក់</h4>
             <p>ទំនិញ: <span id="item-name">-</span></p>
             <p>តម្លៃ: <span id="item-price">$0.00</span></p>
-            <button id="buy-btn" onclick="sendDataToBot()">បង់ប្រាក់ / ទទួល Key</button>
+            
+            <div class="payment-section">
+                <p><b>KHQR Biller:</b> KIM CHHOUN LAY [cite: 1]</p>
+                <p>USD: <code>005 737 775</code> | KHR: <code>005 737 779</code> [cite: 1]</p>
+                
+                <div class="form-group">
+                    <label>ឈ្មោះអ្នកទិញ:</label>
+                    <input type="text" id="buyer-name" placeholder="បញ្ជូលឈ្មោះរបស់អ្នក">
+                </div>
+                <div class="form-group">
+                    <label>ថ្ងៃខែឆ្នាំទិញ:</label>
+                    <input type="date" id="buyer-date">
+                </div>
+                <div class="form-group">
+                    <label>แนบรูปสลิป (Transcript):</label>
+                    <input type="file" id="slip-file" accept="image/*">
+                </div>
+            </div>
+
+            <button id="buy-btn" onclick="sendDataToBot()">បញ្ជូនការទិញ / ផ្ញើសลิป</button>
         </div>
     </div>
     <script src="script.js"></script>
